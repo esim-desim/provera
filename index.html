@@ -1,5 +1,3 @@
-# Generating the updated HTML content with x-sandbox header
-html_content_updated_sandbox = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +64,7 @@ html_content_updated_sandbox = """
 
     <script>
         document.getElementById('fetch-data').addEventListener('click', function() {
-            const apiUrl = 'https://api.esim.sm/usage'; // Zameni sa tačnim endpointom
+            const apiUrl = 'https://esim.sm/api/reseller/v1'; // Zameni sa tačnim endpointom
             const apiToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1...'; // Vaš API token
 
             // Preuzimanje ID kartice
@@ -104,11 +102,3 @@ html_content_updated_sandbox = """
     </script>
 </body>
 </html>
-"""
-
-# Saving the updated content to a new HTML file
-updated_file_path_sandbox = '/mnt/data/index_sandbox.html'
-with open(updated_file_path_sandbox, 'w') as file:
-    file.write(html_content_updated_sandbox)
-
-updated_file_path_sandbox
