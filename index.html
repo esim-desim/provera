@@ -3,86 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSIM Praćenje</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 15px;
-        }
-        .container {
-            margin: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .data-section {
-            margin-top: 20px;
-        }
-    </style>
+    <title>eSIM Podaci</title>
 </head>
 <body>
-    <header>
-        <h1>eSIM Praćenje Potrošnje Podataka</h1>
-    </header>
-    
-    <div class="container">
-        <h2>Unesite ID eSIM kartice za praćenje</h2>
-        <input type="text" id="simId" placeholder="Unesite ID kartice" />
-        <button onclick="fetchData()">Pogledaj Potrošnju</button>
-        
-        <div class="data-section" id="dataSection">
-            <!-- Ovdje će se prikazivati podaci -->
-        </div>
-    </div>
-    
-    <script>
-        function fetchData() {
-            const simId = document.getElementById("simId").value;
-            const dataSection = document.getElementById("dataSection");
+    <h1>Podaci o eSIM Kartici</h1>
 
-            if (!simId) {
-                dataSection.innerHTML = "<p>Morate uneti ID kartice.</p>";
+    <label for="iccidInput">Unesite ICCID kartice:</label>
+    <input type="text" id="iccidInput" placeholder="Unesite ICCID">
+    <button onclick="fetchESimData()">Pretraži</button>
+
+    <div id="result"></div>
+
+    <script>
+        function fetchESimData() {
+            const iccidInput = document.getElementById('iccidInput').value.trim();
+            if (!iccidInput) {
+                alert('Molimo unesite ICCID.');
                 return;
             }
 
-            dataSection.innerHTML = "<p>Učitavanje podataka...</p>";
+            const url = `https://esim.sm/api/reseller/v1/esim`;
+            const myHeaders = new Headers();
 
-            fetch(`https://esim.sm/api/reseller/v1/esim/${simId}`, {
+            const requestOptions = {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    dataSection.innerHTML = `<p>Greška: ${data.error.message}</p>`;
-                } else {
-                    dataSection.innerHTML = `
-                        <h3>Podaci za karticu ${simId}:</h3>
-                        <p>Potrošnja: ${data.consumption} MB</p>
-                        <p>Preostalo: ${data.remaining} MB</p>
-                    `;
-                }
-            })
-            .catch(error => {
-                dataSection.innerHTML = "<p>Došlo je do greške prilikom učitavanja podataka.</p>";
-            });
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(url, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    const data = result.data;
+                    const foundCard = data.find(card => card.iccid === iccidInput);
+
+                    const resultDiv = document.getElementById('result');
+                    if (foundCard) {
+                        resultDiv.innerHTML = `
+                            <h2>Podaci za ICCID: ${foundCard.iccid}</h2>
+                            <p>Status: ${foundCard.statusLabel}</p>
+                            <p>Plan: ${foundCard.plan.name}</p>
+                            <p>Preostalo MB: ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
+                            <p>Datum isteka: ${foundCard.expirationTimestamp}</p>
+                            <p>Cena: ${foundCard.plan.price} ${foundCard.plan.currency}</p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<p>eSIM kartica sa unetim ICCID-om nije pronađena.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.log('Greška pri preuzimanju podataka:', error);
+                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
+                });
         }
     </script>
 </body>
