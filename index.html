@@ -6,7 +6,7 @@
     <title>Desim - Praćenje eSIM potrošnje</title>
 </head>
 <body>
-    <h1>Desim - Praćenje internet potrošnje</h1>
+    <h1>Desim - Praćenje potrošnje</h1>
     <input type="text" id="esim-id" placeholder="Unesite eSIM ID">
     <button id="fetch-data">Proveri potrošnju</button>
     <div id="result"></div>
@@ -28,10 +28,23 @@
                 redirect: 'follow'
             };
 
-            fetch(`https://esim.sm/api/reseller/v1/usage?esim_id=${esimId}`, requestOptions)
-                .then(response => response.text())
+            fetch(`https://esim.sm/api/reseller/v1/country?id=it&hl=en&currency=usd`, requestOptions)
+                .then(response => response.json())
                 .then(result => {
-                    document.getElementById('result').textContent = 'Potrošnja: ' + result;
+                    const country = result.data.country;
+                    const plans = result.data.plans;
+
+                    let output = `Država: ${country.name} (${country.id})<br>`;
+                    output += `<img src="${country.flag}" alt="${country.name} flag"><br>`;
+                    output += `<h3>Planovi:</h3>`;
+
+                    plans.forEach(plan => {
+                        output += `<p><strong>${plan.name}</strong><br>`;
+                        output += `MB: ${plan.mb}MB, Trajanje: ${plan.days} dana<br>`;
+                        output += `Brzina: ${plan.networkSpeed}, Cena: ${plan.price} ${plan.currency}<br></p>`;
+                    });
+
+                    document.getElementById('result').innerHTML = output;
                 })
                 .catch(error => {
                     document.getElementById('result').textContent = 'Došlo je do greške: ' + error;
