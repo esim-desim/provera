@@ -1,61 +1,41 @@
-<!DOCTYPE html>
-<html lang="sr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSIM Podaci</title>
-</head>
-<body>
-    <h1>Podaci o eSIM Kartici</h1>
+function fetchESimData() {
+    const idInput = document.getElementById('idInput').value.trim();
+    if (!idInput) {
+        alert('Molimo unesite ID kartice.');
+        return;
+    }
 
-    <label for="iccidInput">Unesite ICCID kartice:</label>
-    <input type="text" id="iccidInput" placeholder="Unesite ICCID">
-    <button onclick="fetchESimData()">Pretraži</button>
+    const url = `https://esim.sm/api/reseller/v1/esim`;
+    const myHeaders = new Headers();
+    const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
 
-    <div id="result"></div>
+    fetch(url, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            const data = result.data;
+            const foundCard = data.find(card => card.id.toString() === idInput);
 
-    <script>
-        function fetchESimData() {
-            const iccidInput = document.getElementById('iccidInput').value.trim();
-            if (!iccidInput) {
-                alert('Molimo unesite ICCID.');
-                return;
+            const resultDiv = document.getElementById('result');
+            if (foundCard) {
+                resultDiv.innerHTML = `
+                    <h2>Podaci za karticu:</h2>
+                    <p><strong>ID:</strong> ${foundCard.id}</p>
+                    <p><strong>Status:</strong> ${foundCard.statusLabel}</p>
+                    <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
+                    <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
+                    <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
+                    <p><strong>Cena:</strong> ${foundCard.plan.price} ${foundCard.plan.currency}</p>
+                `;
+            } else {
+                resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
             }
-
-            const url = `https://esim.sm/api/reseller/v1/esim`;
-            const myHeaders = new Headers();
-
-            const requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-
-            fetch(url, requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                    const data = result.data;
-                    const foundCard = data.find(card => card.iccid === iccidInput);
-
-                    const resultDiv = document.getElementById('result');
-                    if (foundCard) {
-                        resultDiv.innerHTML = `
-                            <h2>Podaci za ICCID: ${foundCard.iccid}</h2>
-                            <p>Status: ${foundCard.statusLabel}</p>
-                            <p>Plan: ${foundCard.plan.name}</p>
-                            <p>Preostalo MB: ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
-                            <p>Datum isteka: ${foundCard.expirationTimestamp}</p>
-                            <p>Cena: ${foundCard.plan.price} ${foundCard.plan.currency}</p>
-                        `;
-                    } else {
-                        resultDiv.innerHTML = `<p>eSIM kartica sa unetim ICCID-om nije pronađena.</p>`;
-                    }
-                })
-                .catch(error => {
-                    console.log('Greška pri preuzimanju podataka:', error);
-                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
-                });
-        }
-    </script>
-</body>
-</html>
+        })
+        .catch(error => {
+            console.log('Greška pri preuzimanju podataka:', error);
+            document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
+        });
+}
