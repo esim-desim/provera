@@ -3,109 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pretraga eSIM Kartice</title>
+    <title>eSIM Pretraga</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f4f4f9;
+            margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
             background-color: white;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
         }
-        input[type="text"] {
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
         button {
-            padding: 10px 20px;
-            border: none;
+            width: 100%;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            font-size: 16px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            border-radius: 4px;
         }
         button:hover {
             background-color: #45a049;
         }
         #result {
             margin-top: 20px;
-        }
-        p {
-            font-size: 16px;
-            color: #333;
-        }
-        strong {
-            color: #000;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Pretraga eSIM Kartice</h1>
-        <label for="idInput">Unesite ID kartice:</label>
-        <input type="text" id="idInput" placeholder="Unesite ID kartice">
-        <button onclick="fetchESimData()">Pretraži</button>
+<div class="container">
+    <h2>Pretraga eSIM Kartice</h2>
+    <input type="text" id="idInput" placeholder="Unesite ID kartice">
+    <button onclick="fetchESimData()">Pretrazi</button>
+    <div id="result"></div>
+</div>
 
-        <div id="result"></div>
-    </div>
-
-    <script>
-        function fetchESimData() {
-            const idInput = document.getElementById('idInput').value.trim();
-            if (!idInput) {
-                alert('Molimo unesite ID kartice.');
-                return;
-            }
-
-            const url = `https://esim.sm/api/reseller/v1/esim`;
-            const myHeaders = new Headers();
-            const requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-
-            fetch(url, requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                    const data = result.data;
-                    const foundCard = data.find(card => card.id.toString() === idInput);
-
-                    const resultDiv = document.getElementById('result');
-                    if (foundCard) {
-                        resultDiv.innerHTML = `
-                            <h2>Podaci za karticu:</h2>
-                            <p><strong>ID:</strong> ${foundCard.id}</p>
-                            <p><strong>Status:</strong> ${foundCard.status}</p>
-                            <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
-                            <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
-                            <p><strong>Cena:</strong> ${foundCard.customerPaidUsd} USD</p>
-                        `;
-                    } else {
-                        resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.log('Greška pri preuzimanju podataka:', error);
-                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
-                });
+<script>
+    function fetchESimData() {
+        const idInput = document.getElementById('idInput').value.trim();
+        if (!idInput) {
+            alert('Molimo unesite ID kartice.');
+            return;
         }
-    </script>
+
+        const url = `https://esim.sm/api/reseller/v1/esim`;
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI");
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch(url, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                const data = result.data;
+                const foundCard = data.find(card => card.id.toString() === idInput);
+
+                const resultDiv = document.getElementById('result');
+                if (foundCard) {
+                    resultDiv.innerHTML = `
+                        <h3>Podaci za karticu:</h3>
+                        <p><strong>ID:</strong> ${foundCard.id}</p>
+                        <p><strong>Status:</strong> ${foundCard.status}</p>
+                        <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
+                        <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
+                        <p><strong>Cena:</strong> ${foundCard.customerPaidUsd} USD</p>
+                        <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
+                }
+            })
+            .catch(error => {
+                console.log('Greška pri preuzimanju podataka:', error);
+                document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
+            });
+    }
+</script>
 
 </body>
 </html>
