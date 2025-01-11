@@ -1,55 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desim - Praćenje eSIM potrošnje</title>
+    <title>eSIM Praćenje</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+        .container {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .data-section {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Desim - Praćenje potrošnje</h1>
-    <input type="text" id="esim-id" placeholder="Unesite eSIM ID">
-    <button id="fetch-data">Proveri potrošnju</button>
-    <div id="result"></div>
-
+    <header>
+        <h1>eSIM Praćenje Potrošnje Podataka</h1>
+    </header>
+    
+    <div class="container">
+        <h2>Unesite ID eSIM kartice za praćenje</h2>
+        <input type="text" id="simId" placeholder="Unesite ID kartice" />
+        <button onclick="fetchData()">Pogledaj Potrošnju</button>
+        
+        <div class="data-section" id="dataSection">
+            <!-- Ovdje će se prikazivati podaci -->
+        </div>
+    </div>
+    
     <script>
-        document.getElementById('fetch-data').addEventListener('click', function() {
-            const esimId = document.getElementById('esim-id').value.trim();
-            if (!esimId) {
-                document.getElementById('result').textContent = 'Molimo unesite eSIM ID';
+        function fetchData() {
+            const simId = document.getElementById("simId").value;
+            const dataSection = document.getElementById("dataSection");
+
+            if (!simId) {
+                dataSection.innerHTML = "<p>Morate uneti ID kartice.</p>";
                 return;
             }
 
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU2ODAwLCJleHAiOjE3NjgwOTI4MDAsImp0aSI6IjRiMjkyNTk1YWEzNzc5MyIsImlkIjoxOTUwNzZ9.hnVPD2MKgZXbe7bao2TVk5ur6Qzmgx8YuOvc-9whOy8");
-            
-            var requestOptions = {
+            dataSection.innerHTML = "<p>Učitavanje podataka...</p>";
+
+            fetch(`https://esim.sm/api/reseller/v1/esim/${simId}`, {
                 method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-
-            fetch(`https://esim.sm/api/reseller/v1/country?id=it&hl=en&currency=usd`, requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                    const country = result.data.country;
-                    const plans = result.data.plans;
-
-                    let output = `Država: ${country.name} (${country.id})<br>`;
-                    output += `<img src="${country.flag}" alt="${country.name} flag"><br>`;
-                    output += `<h3>Planovi:</h3>`;
-
-                    plans.forEach(plan => {
-                        output += `<p><strong>${plan.name}</strong><br>`;
-                        output += `MB: ${plan.mb}MB, Trajanje: ${plan.days} dana<br>`;
-                        output += `Brzina: ${plan.networkSpeed}, Cena: ${plan.price} ${plan.currency}<br></p>`;
-                    });
-
-                    document.getElementById('result').innerHTML = output;
-                })
-                .catch(error => {
-                    document.getElementById('result').textContent = 'Došlo je do greške: ' + error;
-                });
-        });
+                headers: {
+                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    dataSection.innerHTML = `<p>Greška: ${data.error.message}</p>`;
+                } else {
+                    dataSection.innerHTML = `
+                        <h3>Podaci za karticu ${simId}:</h3>
+                        <p>Potrošnja: ${data.consumption} MB</p>
+                        <p>Preostalo: ${data.remaining} MB</p>
+                    `;
+                }
+            })
+            .catch(error => {
+                dataSection.innerHTML = "<p>Došlo je do greške prilikom učitavanja podataka.</p>";
+            });
+        }
     </script>
 </body>
 </html>
