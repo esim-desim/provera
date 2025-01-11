@@ -55,6 +55,19 @@
         .result p {
             margin: 5px 0;
         }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar-inner {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0;
+            transition: width 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +82,18 @@
     </div>
 
     <script>
+        // Mapa za pretvaranje skraćenica država u pune nazive
+        const countryMap = {
+            IT: "Italija",
+            HR: "Hrvatska",
+            DE: "Nemačka",
+            FR: "Francuska",
+            NO: "Norveška",
+            TR: "Turska",
+            US: "Sjedinjene Američke Države",
+            // Dodajte više država po potrebi
+        };
+
         async function fetchData() {
             const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
@@ -101,15 +126,19 @@
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
+                        const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
                         const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
                         const expiration = esimData.expirationTimestamp;
-                        const countries = esimData.plan.countries.join(", ");
+                        const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
 
                         document.getElementById('result').innerHTML = `
                             <h3>Status Kartice: ${status}</h3>
-                            <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB</p>
+                            <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
+                            <div class="progress-bar">
+                                <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
+                            </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe:</strong> ${expiration}</p>
                             <p><strong>Države:</strong> ${countries}</p>
