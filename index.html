@@ -3,100 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desim - Praćenje DeSIM potrošnje</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            color: #333;
-            margin-top: 20px;
-        }
-        .usage-box {
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background: #fff;
-            max-width: 400px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"] {
-            padding: 10px;
-            width: 80%;
-            margin: 10px 0;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #444;
-        }
-    </style>
+    <title>Desim - Praćenje eSIM potrošnje</title>
 </head>
 <body>
-    <h1>Desim - Praćenje potrošnje</h1>
-    <div class="usage-box">
-        <p>Unesite ID vaše eSIM kartice:</p>
-        <input type="text" id="esim-id" placeholder="Unesite eSIM ID">
-        <button id="fetch-data">Proveri potrošnju</button>
-        <div class="result" id="result"></div>
-    </div>
+    <h1>Desim - Praćenje internet potrošnje</h1>
+    <input type="text" id="esim-id" placeholder="Unesite eSIM ID">
+    <button id="fetch-data">Proveri potrošnju</button>
+    <div id="result"></div>
 
     <script>
         document.getElementById('fetch-data').addEventListener('click', function() {
-            const apiUrl = 'https://esim.sm/api/reseller/v1'; // Endpoint za proveru potrošnje
-            const apiToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU2ODAwLCJleHAiOjE3NjgwOTI4MDAsImp0aSI6IjRiMjkyNTk1YWEzNzc5MyIsImlkIjoxOTUwNzZ9.hnVPD2MKgZXbe7bao2TVk5ur6Qzmgx8YuOvc-9whOy8'; // Vaš API token
-
-            // Preuzimanje ID kartice
             const esimId = document.getElementById('esim-id').value.trim();
-
             if (!esimId) {
-                document.getElementById('result').textContent = 'Molimo unesite ID kartice.';
+                document.getElementById('result').textContent = 'Molimo unesite eSIM ID';
                 return;
             }
 
-            // Slanje zahteva ka API-ju
-            fetch(`${apiUrl}?esim_id=${esimId}`, {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU2ODAwLCJleHAiOjE3NjgwOTI4MDAsImp0aSI6IjRiMjkyNTk1YWEzNzc5MyIsImlkIjoxOTUwNzZ9.hnVPD2MKgZXbe7bao2TVk5ur6Qzmgx8YuOvc-9whOy8");
+            
+            var requestOptions = {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${apiToken}`,
-                }
-            })
-            .then(response => {
-                console.log('Status kod odgovora:', response.status); // Logovanje statusnog koda
-                return response.json();
-            })
-            .then(data => {
-                console.log(data); // Logovanje podataka
-                // Prikaz potrošnje
-                const used = data.used;
-                const remaining = data.remaining;
-                document.getElementById('result').textContent = `Potrošeno je ${used}, ostalo je još ${remaining}.`;
-            })
-            .catch(error => {
-                console.error('Greška:', error);
-                document.getElementById('result').textContent = 'Došlo je do greške pri proveri potrošnje: ' + error.message;
-            });
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(`https://esim.sm/api/reseller/v1/usage?esim_id=${esimId}`, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById('result').textContent = 'Potrošnja: ' + result;
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = 'Došlo je do greške: ' + error;
+                });
         });
     </script>
 </body>
