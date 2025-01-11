@@ -64,7 +64,7 @@
 
     <script>
         async function fetchData() {
-            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
+            const cardId = document.getElementById('cardId').value.trim(); // Uneti ID kartice
             if (!cardId) {
                 alert('Molimo unesite ID kartice.');
                 return;
@@ -72,34 +72,35 @@
 
             const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
+            // Koristimo CORS proxy
+            const apiUrl = `https://cors-anywhere.herokuapp.com/https://esim.sm/api/reseller/v1/esim`;
+
             try {
-                const response = await fetch(`https://esim.sm/api/reseller/v1/esim`, {
+                const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 });
 
-                // Ako odgovor nije u redu, prikaži grešku
                 if (!response.ok) {
                     document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
                     return;
                 }
 
-                // Prikazivanje ceo JSON odgovor u konzoli
                 const data = await response.json();
-                console.log(data); // Dodajte log za ceo odgovor
 
                 if (data.success) {
-                    // Pretraga po ID kartici
-                    const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
+                    const esimData = data.data.find(item => item.id == cardId); // Pronalaženje kartice po ID-u
 
                     if (esimData) {
-                        const usedMB = esimData.mbUsed; // Potrošeno MB
-                        const totalMB = esimData.mbTotal; // Ukupno MB
-                        const remainingMB = totalMB - usedMB; // Preostali MB
-                        const status = esimData.status === 'active' ? 'Aktivna' : 'Neaktivna'; // Status kartice
-                        const expiration = esimData.expirationTimestamp; // Datum isteka
+                        const usedMB = esimData.mbUsed;
+                        const totalMB = esimData.mbTotal;
+                        const remainingMB = totalMB - usedMB;
+                        const status = esimData.status === 'active' ? 'Aktivna' : 'Neaktivna';
+                        const expiration = esimData.expirationTimestamp;
 
                         document.getElementById('result').innerHTML = `
                             <h3>Status: ${status}</h3>
@@ -114,8 +115,7 @@
                     document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
                 }
             } catch (error) {
-                console.error('Greška u API pozivu:', error);
-                document.getElementById('result').innerHTML = 'Došlo je do greške prilikom učitavanja podataka.';
+                document.getElementById('result').innerHTML = 'Greška: ' + error.message;
             }
         }
     </script>
