@@ -1,41 +1,112 @@
-function fetchESimData() {
-    const idInput = document.getElementById('idInput').value.trim();
-    if (!idInput) {
-        alert('Molimo unesite ID kartice.');
-        return;
-    }
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eSIM Podaci</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        p {
+            font-size: 16px;
+            color: #333;
+        }
+        strong {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
 
-    const url = `https://esim.sm/api/reseller/v1/esim`;
-    const myHeaders = new Headers();
-    const requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-    };
+    <div class="container">
+        <h1>Pretraga eSIM Kartice</h1>
+        <label for="idInput">Unesite ID kartice:</label>
+        <input type="text" id="idInput" placeholder="Unesite ID kartice">
+        <button onclick="fetchESimData()">Pretraži</button>
 
-    fetch(url, requestOptions)
-        .then(response => response.json())
-        .then(result => {
-            const data = result.data;
-            const foundCard = data.find(card => card.id.toString() === idInput);
+        <div id="result"></div>
+    </div>
 
-            const resultDiv = document.getElementById('result');
-            if (foundCard) {
-                resultDiv.innerHTML = `
-                    <h2>Podaci za karticu:</h2>
-                    <p><strong>ID:</strong> ${foundCard.id}</p>
-                    <p><strong>Status:</strong> ${foundCard.statusLabel}</p>
-                    <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
-                    <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
-                    <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
-                    <p><strong>Cena:</strong> ${foundCard.plan.price} ${foundCard.plan.currency}</p>
-                `;
-            } else {
-                resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
+    <script>
+        function fetchESimData() {
+            const idInput = document.getElementById('idInput').value.trim();
+            if (!idInput) {
+                alert('Molimo unesite ID kartice.');
+                return;
             }
-        })
-        .catch(error => {
-            console.log('Greška pri preuzimanju podataka:', error);
-            document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
-        });
-}
+
+            const url = `https://esim.sm/api/reseller/v1/esim`;
+            const myHeaders = new Headers();
+            const requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(url, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    const data = result.data;
+                    const foundCard = data.find(card => card.id.toString() === idInput);
+
+                    const resultDiv = document.getElementById('result');
+                    if (foundCard) {
+                        resultDiv.innerHTML = `
+                            <h2>Podaci za karticu:</h2>
+                            <p><strong>ID:</strong> ${foundCard.id}</p>
+                            <p><strong>Status:</strong> ${foundCard.statusLabel}</p>
+                            <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
+                            <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
+                            <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
+                            <p><strong>Cena:</strong> ${foundCard.plan.price} ${foundCard.plan.currency}</p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.log('Greška pri preuzimanju podataka:', error);
+                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
+                });
+        }
+    </script>
+
+</body>
+</html>
