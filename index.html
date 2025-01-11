@@ -30,95 +30,80 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .form-container input[type="submit"] {
+        .form-container button {
+            width: 100%;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-        .form-container input[type="submit"]:hover {
+        .form-container button:hover {
             background-color: #45a049;
         }
         .result {
             margin-top: 20px;
-            text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
+
     <h1>Praćenje Potrošnje eSIM Kartice</h1>
+
     <div class="form-container">
-        <form id="usage-form">
-            <label for="card_id">Unesite ID kartice:</label>
-            <input type="text" id="card_id" name="card_id" required>
-            <input type="submit" value="Prikaži Potrošnju">
-        </form>
-    </div>
-    <div class="result" id="result">
-        <!-- Rezultati će se prikazati ovde -->
+        <input type="text" id="cardId" placeholder="Unesite ID kartice (237546)" value="237546">
+        <button onclick="fetchData()">Prikaži Potrošnju</button>
+        <div id="result" class="result"></div>
     </div>
 
     <script>
-        const form = document.getElementById('usage-form');
-        const resultDiv = document.getElementById('result');
-        
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        async function fetchData() {
+            const cardId = document.getElementById('cardId').value;
+            const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
-            // Unos ID kartice
-            const cardId = document.getElementById('card_id').value;
-
-            // URL API-ja i JWT token
-            const url = 'https://esim.sm/api/reseller/v1/esim';
-            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI';
-
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                // Logovanje odgovora za dijagnostiku
-                console.log('Response Status:', response.status);
-                console.log('Response Headers:', response.headers);
-
-                if (!response.ok) {
-                    throw new Error('Neuspešan zahtev');
+            const response = await fetch(`https://esim.sm/api/reseller/v1/esim`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
+            });
 
-                const data = await response.json();
-                console.log('API Response:', data);
+            if (!response.ok) {
+                document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
+                return;
+            }
 
-                // Traženje kartice sa unetim ID-om
-                let cardData = null;
-                for (const card of data.cards) {
-                    if (id === cardId) {
-                        cardData = card;
-                        break;
-                    }
-                }
+            const data = await response.json();
 
-                // Prikazivanje rezultata
-                if (cardData) {
-                    resultDiv.innerHTML = `
-                        <h3>Status kartice ID: ${cardId}</h3>
-                        <p>Status: ${cardData.status}</p>
-                        <p>Potrošeno: ${cardData.used_data} MB od ${cardData.total_data} MB</p>
-                        <p>Preostalo: ${cardData.remaining_data} MB</p>
+            if (data.success) {
+                const esimData = data.data.find(item => item.id == cardId);
+
+                if (esimData) {
+                    const usedMB = esimData.mbUsed;
+                    const totalMB = esimData.mbTotal;
+                    const remainingMB = totalMB - usedMB;
+                    const status = esimData.status === 'active' ? 'Aktivna' : 'Neaktivna';
+                    const expiration = esimData.expirationTimestamp;
+
+                    document.getElementById('result').innerHTML = `
+                        <h3>Status: ${status}</h3>
+                        <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB</p>
+                        <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
+                        <p><strong>Ističe:</strong> ${expiration}</p>
                     `;
                 } else {
-                    resultDiv.innerHTML = `<p>Kartica sa ID "${cardId}" nije pronađena.</p>`;
+                    document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
                 }
-            } catch (error) {
-                resultDiv.innerHTML = `<p>Greška pri učitavanju podataka: ${error.message}</p>`;
-                console.error('Error details:', error); // Loguj detalje greške
+            } else {
+                document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
             }
-        });
+        }
     </script>
+
 </body>
 </html>
