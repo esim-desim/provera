@@ -1,4 +1,5 @@
-
+# Generating the updated HTML content with x-sandbox header
+html_content_updated_sandbox = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,17 +78,15 @@
             }
 
             // Slanje zahteva ka API-ju
-            fetch(`${apiUrl}?esim_id=${esimId}`, { // Dodavanje ID kartice kao parametra
+            fetch(`${apiUrl}?esim_id=${esimId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${apiToken}`
+                    'Authorization': `Bearer ${apiToken}`,
+                    'x-sandbox': 'on' // Dodato za sandbox režim
                 }
             })
             .then(response => {
                 console.log('Status kod odgovora:', response.status); // Logovanje statusnog koda
-                if (!response.ok) {
-                    throw new Error('Greška pri povezivanju sa API-jem: ' + response.statusText);
-                }
                 return response.json();
             })
             .then(data => {
@@ -105,3 +104,11 @@
     </script>
 </body>
 </html>
+"""
+
+# Saving the updated content to a new HTML file
+updated_file_path_sandbox = '/mnt/data/index_sandbox.html'
+with open(updated_file_path_sandbox, 'w') as file:
+    file.write(html_content_updated_sandbox)
+
+updated_file_path_sandbox
