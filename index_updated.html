@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desim - Praćenje eSIM potrošnje</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .usage-box {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: #fff;
+            max-width: 400px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Desim - Praćenje potrošnje</h1>
+    <div class="usage-box">
+        <p>Unesite ID vaše eSIM kartice:</p>
+        <input type="text" id="esim-id" placeholder="Unesite eSIM ID">
+        <button id="fetch-data">Proveri potrošnju</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('fetch-data').addEventListener('click', function() {
+            const apiUrl = 'https://api.esim.sm/usage'; // Zameni sa tačnim endpointom
+            const apiToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1...'; // Vaš API token
+
+            // Preuzimanje ID kartice
+            const esimId = document.getElementById('esim-id').value.trim();
+
+            if (!esimId) {
+                document.getElementById('result').textContent = 'Molimo unesite ID kartice.';
+                return;
+            }
+
+            // Slanje zahteva ka API-ju
+            fetch(`${apiUrl}?esim_id=${esimId}`, { // Dodavanje ID kartice kao parametra
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`
+                }
+            })
+            .then(response => {
+                console.log(response); // Logovanje odgovora
+                if (!response.ok) {
+                    throw new Error('Greška pri povezivanju sa API-jem.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Logovanje podataka
+                // Prikaz potrošnje
+                const used = data.used;
+                const remaining = data.remaining;
+                document.getElementById('result').textContent = `Potrošeno je ${used}, ostalo je još ${remaining}.`;
+            })
+            .catch(error => {
+                console.error('Greška:', error);
+                document.getElementById('result').textContent = 'Došlo je do greške pri proveri potrošnje: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
