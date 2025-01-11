@@ -78,16 +78,21 @@
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,  // Dodano "Bearer"
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
+
+                // Logovanje odgovora za dijagnostiku
+                console.log('Response Status:', response.status);
+                console.log('Response Headers:', response.headers);
 
                 if (!response.ok) {
                     throw new Error('Neuspešan zahtev');
                 }
 
                 const data = await response.json();
+                console.log('API Response:', data);
 
                 // Traženje kartice sa unetim ID-om
                 let cardData = null;
@@ -111,6 +116,7 @@
                 }
             } catch (error) {
                 resultDiv.innerHTML = `<p>Greška pri učitavanju podataka: ${error.message}</p>`;
+                console.error('Error details:', error); // Loguj detalje greške
             }
         });
     </script>
