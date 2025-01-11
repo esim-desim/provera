@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSIM Podaci</title>
+    <title>Pretraga eSIM Kartice</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -91,11 +91,10 @@
                         resultDiv.innerHTML = `
                             <h2>Podaci za karticu:</h2>
                             <p><strong>ID:</strong> ${foundCard.id}</p>
-                            <p><strong>Status:</strong> ${foundCard.statusLabel}</p>
-                            <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
+                            <p><strong>Status:</strong> ${foundCard.status}</p>
                             <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
                             <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
-                            <p><strong>Cena:</strong> ${foundCard.plan.price} ${foundCard.plan.currency}</p>
+                            <p><strong>Cena:</strong> ${foundCard.customerPaidUsd} USD</p>
                         `;
                     } else {
                         resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
