@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praćenje PotrošnjeSIM Kartice</title>
+    <title>Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,14 +87,15 @@
             const data = await response.json();
 
             if (data.success) {
+                // Pronalazak kartice po ID-u u "data" objektu
                 const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                 if (esimData) {
-                    const usedMB = esimData.mbUsed;
-                    const totalMB = esimData.mbTotal;
-                    const remainingMB = totalMB - usedMB;
-                    const status = esimData.status === 'active' ? 'Aktivna' : 'Neaktivna';
-                    const expiration = esimData.expirationTimestamp;
+                    const usedMB = esimData.mbUsed; // Potrošeno MB
+                    const totalMB = esimData.mbTotal; // Ukupno MB
+                    const remainingMB = totalMB - usedMB; // Preostali MB
+                    const status = esimData.status === 'active' ? 'Aktivna' : 'Neaktivna'; // Status kartice
+                    const expiration = esimData.expirationTimestamp; // Datum isteka
 
                     document.getElementById('result').innerHTML = `
                         <h3>Status: ${status}</h3>
