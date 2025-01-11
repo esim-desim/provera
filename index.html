@@ -3,75 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pretraga eSIM Kartica</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fc;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-        h1 {
-            color: #007bff;
-        }
-        input {
-            width: 80%;
-            padding: 10px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-            display: none;
-        }
-    </style>
+    <title>eSIM Podaci</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Pretraga eSIM Kartice</h1>
-        <label for="idInput">Unesite ID kartice:</label>
-        <input type="text" id="idInput" placeholder="Unesite ID kartice" />
-        <button onclick="fetchESimData()">Pretraga</button>
-        <div id="result"></div>
-    </div>
+    <h1>Podaci o eSIM Kartici</h1>
+
+    <label for="iccidInput">Unesite ICCID kartice:</label>
+    <input type="text" id="iccidInput" placeholder="Unesite ICCID">
+    <button onclick="fetchESimData()">Pretraži</button>
+
+    <div id="result"></div>
 
     <script>
         function fetchESimData() {
-            const idInput = document.getElementById('idInput').value.trim();
-            if (!idInput) {
-                alert('Molimo unesite ID kartice.');
+            const iccidInput = document.getElementById('iccidInput').value.trim();
+            if (!iccidInput) {
+                alert('Molimo unesite ICCID.');
                 return;
             }
 
@@ -88,27 +35,25 @@
                 .then(response => response.json())
                 .then(result => {
                     const data = result.data;
-                    const foundCard = data.find(card => card.id === parseInt(idInput));
+                    const foundCard = data.find(card => card.iccid === iccidInput);
 
                     const resultDiv = document.getElementById('result');
                     if (foundCard) {
                         resultDiv.innerHTML = `
-                            <h2>Podaci za ID: ${foundCard.id}</h2>
-                            <p><strong>Status:</strong> ${foundCard.statusLabel}</p>
-                            <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
-                            <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
-                            <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
-                            <p><strong>Cena:</strong> ${foundCard.plan.price} ${foundCard.plan.currency}</p>
+                            <h2>Podaci za ICCID: ${foundCard.iccid}</h2>
+                            <p>Status: ${foundCard.statusLabel}</p>
+                            <p>Plan: ${foundCard.plan.name}</p>
+                            <p>Preostalo MB: ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
+                            <p>Datum isteka: ${foundCard.expirationTimestamp}</p>
+                            <p>Cena: ${foundCard.plan.price} ${foundCard.plan.currency}</p>
                         `;
                     } else {
-                        resultDiv.innerHTML = `<p>eSIM kartica sa unetim ID-om nije pronađena.</p>`;
+                        resultDiv.innerHTML = `<p>eSIM kartica sa unetim ICCID-om nije pronađena.</p>`;
                     }
-                    resultDiv.style.display = 'block';
                 })
                 .catch(error => {
                     console.log('Greška pri preuzimanju podataka:', error);
-                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podatak.</p>';
-                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
                 });
         }
     </script>
