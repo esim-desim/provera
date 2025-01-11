@@ -1,112 +1,118 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="hr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSIM Pretraga</title>
+    <title>Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: white;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            width: 300px;
+            background-color: #f4f4f4;
         }
-        h2 {
+        h1 {
             text-align: center;
-            margin-bottom: 20px;
+            color: #333;
         }
-        input {
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container input[type="text"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        button {
-            width: 100%;
-            padding: 10px;
+        .form-container input[type="submit"] {
             background-color: #4CAF50;
             color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
-        button:hover {
+        .form-container input[type="submit"]:hover {
             background-color: #45a049;
         }
-        #result {
+        .result {
             margin-top: 20px;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border-radius: 5px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <h1>Praćenje Potrošnje eSIM Kartice</h1>
+    <div class="form-container">
+        <form id="usage-form">
+            <label for="card_id">Unesite ID kartice:</label>
+            <input type="text" id="card_id" name="card_id" required>
+            <input type="submit" value="Prikaži Potrošnju">
+        </form>
+    </div>
+    <div class="result" id="result">
+        <!-- Rezultati će se prikazati ovde -->
+    </div>
 
-<div class="container">
-    <h2>Pretraga eSIM Kartice</h2>
-    <input type="text" id="idInput" placeholder="Unesite ID kartice">
-    <button onclick="fetchESimData()">Pretrazi</button>
-    <div id="result"></div>
-</div>
+    <script>
+        const form = document.getElementById('usage-form');
+        const resultDiv = document.getElementById('result');
+        
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-<script>
-    function fetchESimData() {
-        const idInput = document.getElementById('idInput').value.trim();
-        if (!idInput) {
-            alert('Molimo unesite ID kartice.');
-            return;
-        }
+            // Unos ID kartice
+            const cardId = document.getElementById('card_id').value;
 
-        const url = `https://esim.sm/api/reseller/v1/esim`;
-        const myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI");
+            // URL API-ja i JWT token
+            const url = 'https://esim.sm/api/reseller/v1/esim';
+            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI';
 
-        const requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-            redirect: 'follow'
-        };
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Dodano "Bearer"
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-        fetch(url, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                const data = result.data;
-                const foundCard = data.find(card => card.id.toString() === idInput);
+                if (!response.ok) {
+                    throw new Error('Neuspešan zahtev');
+                }
 
-                const resultDiv = document.getElementById('result');
-                if (foundCard) {
+                const data = await response.json();
+
+                // Traženje kartice sa unetim ID-om
+                let cardData = null;
+                for (const card of data.cards) {
+                    if (card.id === cardId) {
+                        cardData = card;
+                        break;
+                    }
+                }
+
+                // Prikazivanje rezultata
+                if (cardData) {
                     resultDiv.innerHTML = `
-                        <h3>Podaci za karticu:</h3>
-                        <p><strong>ID:</strong> ${foundCard.id}</p>
-                        <p><strong>Status:</strong> ${foundCard.status}</p>
-                        <p><strong>Preostalo MB:</strong> ${foundCard.mbTotal - foundCard.mbUsed} MB</p>
-                        <p><strong>Datum isteka:</strong> ${foundCard.expirationTimestamp}</p>
-                        <p><strong>Cena:</strong> ${foundCard.customerPaidUsd} USD</p>
-                        <p><strong>Plan:</strong> ${foundCard.plan.name}</p>
+                        <h3>Status kartice ID: ${cardId}</h3>
+                        <p>Status: ${cardData.status}</p>
+                        <p>Potrošeno: ${cardData.used_data} MB od ${cardData.total_data} MB</p>
+                        <p>Preostalo: ${cardData.remaining_data} MB</p>
                     `;
                 } else {
-                    resultDiv.innerHTML = '<p>eSIM kartica sa unetim ID-om nije pronađena.</p>';
+                    resultDiv.innerHTML = `<p>Kartica sa ID "${cardId}" nije pronađena.</p>`;
                 }
-            })
-            .catch(error => {
-                console.log('Greška pri preuzimanju podataka:', error);
-                document.getElementById('result').innerHTML = '<p>Došlo je do greške prilikom preuzimanja podataka.</p>';
-            });
-    }
-</script>
-
+            } catch (error) {
+                resultDiv.innerHTML = `<p>Greška pri učitavanju podataka: ${error.message}</p>`;
+            }
+        });
+    </script>
 </body>
 </html>
