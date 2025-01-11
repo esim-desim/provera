@@ -56,14 +56,20 @@
     <h1>Praćenje Potrošnje eSIM Kartice</h1>
 
     <div class="form-container">
-        <input type="text" id="cardId" placeholder="Unesite ID kartice (237546)" value="237546">
+        <label for="cardId">Unesite ID kartice:</label>
+        <input type="text" id="cardId" placeholder="Unesite ID kartice" />
         <button onclick="fetchData()">Prikaži Potrošnju</button>
         <div id="result" class="result"></div>
     </div>
 
     <script>
         async function fetchData() {
-            const cardId = document.getElementById('cardId').value;
+            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
+            if (!cardId) {
+                alert('Molimo unesite ID kartice.');
+                return;
+            }
+
             const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
             const response = await fetch(`https://esim.sm/api/reseller/v1/esim`, {
@@ -81,7 +87,7 @@
             const data = await response.json();
 
             if (data.success) {
-                const esimData = data.data.find(item => item.id == cardId);
+                const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                 if (esimData) {
                     const usedMB = esimData.mbUsed;
