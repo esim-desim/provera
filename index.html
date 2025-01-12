@@ -203,13 +203,13 @@
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
                         const status = (esimData.status === 'active' || esimData.status === 'in_use') ? 'Aktivna' : (esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana');
-                        const statusLabel = esimData.statuslabel ? esimData.statuslabel : ''; // Dodato za ispis statuslabela
+                        const statusLabel = esimData.statuslabel || "Nema status labela"; // Koristi "Nema status labela" ako ne postoji
                         const expiration = esimData.expirationTimestamp;
                         const name = esimData.name || "Nepoznato";
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
-                        const package = esimData.plan.package || "Nema paketa";
+                        const package = esimData.plan.name || "Nema paketa"; // Prikazivanje paketa sa plan.name
                         const packageExpiration = calculateDaysRemaining(expiration);
 
                         document.getElementById('result').innerHTML = `
