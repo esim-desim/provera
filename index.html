@@ -6,7 +6,7 @@
     <title>Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
@@ -14,6 +14,7 @@
         h1 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
         }
         .form-container {
             max-width: 400px;
@@ -21,7 +22,7 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
         .form-container input[type="text"] {
             width: 100%;
@@ -29,6 +30,7 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
         .form-container button {
             width: 100%;
@@ -46,14 +48,26 @@
             margin-top: 20px;
             padding: 20px;
             background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
         .result h3 {
             margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
         }
         .result p {
             margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-inactive {
+            color: red;
+        }
+        .status-not-installed {
+            color: orange;
         }
         .progress-bar {
             width: 100%;
@@ -64,15 +78,34 @@
         }
         .progress-bar-inner {
             height: 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #4CAF50, #81C784);
             width: 0;
-            transition: width 0.3s;
+            transition: width 0.3s ease-in-out;
+        }
+        .info-section {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .info-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        .info-card p {
+            margin: 5px 0;
+        }
+        .info-card strong {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>Praćenje Potrošnje DeSIM Kartice</h1>
+    <h1>Praćenje Potrošnje eSIM Kartice</h1>
 
     <div class="form-container">
         <label for="cardId">Unesite ID kartice:</label>
@@ -101,8 +134,7 @@
                 return;
             }
 
-            // Zamenjujemo CORS Anywhere URL sa vašim Vercel proxy-jem
-            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
+            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim";
             const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
             try {
@@ -134,17 +166,26 @@
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
 
+                        // Dinamički dodajte boje statusa
+                        let statusClass = "status-inactive";
+                        if (status === 'Aktivna') statusClass = "status-active";
+                        else if (status === 'Nije instalirana') statusClass = "status-not-installed";
+
                         document.getElementById('result').innerHTML = `
-                            <h3>Status Kartice: ${status}</h3>
+                            <h3 class="${statusClass}">Status Kartice: ${status}</h3>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe:</strong> ${expiration}</p>
-                            <p><strong>Države:</strong> ${countries}</p>
-                            <p><strong>Roming:</strong> ${roaming}</p>
-                            <p><strong>Hotspot:</strong> ${tethering}</p>
+                            <div class="info-section">
+                                <div class="info-card">
+                                    <p><strong>Države:</strong> ${countries}</p>
+                                    <p><strong>Roming:</strong> ${roaming}</p>
+                                    <p><strong>Hotspot:</strong> ${tethering}</p>
+                                </div>
+                            </div>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
