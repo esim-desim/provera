@@ -71,21 +71,6 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        .status-active {
-            color: #2ecc71;
-            font-weight: 700;
-        }
-
-        .status-inactive {
-            color: #bdc3c7;
-            font-weight: 700;
-        }
-
-        .status-disabled {
-            color: #e67e22;
-            font-weight: 700;
-        }
-
         .progress-bar {
             width: 100%;
             height: 14px;
@@ -122,27 +107,6 @@
     </div>
 
     <script>
-        // Mapa za pretvaranje skraćenica država u pune nazive
-        const countryMap = {
-            IT: "Italija",
-            HR: "Hrvatska",
-            DE: "Nemačka",
-            FR: "Francuska",
-            NO: "Norveška",
-            TR: "Turska",
-            US: "Sjedinjene Američke Države",
-            // Dodajte više država po potrebi
-        };
-
-        // Funkcija za izračunavanje preostalog broja dana do isteka paketa
-        function calculateDaysRemaining(expirationDate) {
-            const currentDate = new Date();
-            const expiration = new Date(expirationDate);
-            const timeDiff = expiration - currentDate;
-            const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            return daysRemaining > 0 ? daysRemaining : 0;
-        }
-
         async function fetchData() {
             const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
@@ -180,20 +144,19 @@
                         const userName = esimData.user ? esimData.user : "Nepoznat korisnik";
                         const planName = esimData.plan?.name || "Nema paketa";
                         const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
-                        const expiration = esimData.expirationTimestamp;
-                        const daysRemaining = calculateDaysRemaining(expiration);
+                        const hotspotAllowed = esimData.hotspotAllowed ? "Dozvoljen" : "Nije dozvoljen";
 
                         document.getElementById('result').innerHTML = `
                             <p><strong>Plan:</strong> ${planName}</p>
                             <p><strong>Status plana:</strong> ${isActive}</p>
                             <p><strong>Korisnik:</strong> ${userName}</p>
                             <p><strong>Status kartice:</strong> ${status}</p>
+                            <p><strong>Hotspot:</strong> ${hotspotAllowed}</p>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
-                            <p><strong>Ističe za:</strong> ${daysRemaining} dana</p>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
