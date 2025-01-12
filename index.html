@@ -22,7 +22,7 @@
         .logo {
             display: block;
             margin: 0 auto;
-            width: 120px; /* Adjust the size of the logo */
+            width: 120px;
             margin-top: 20px;
         }
 
@@ -193,30 +193,29 @@
                 }
 
                 const data = await response.json();
-                console.log("Podaci dobijeni sa servera:", data); // Ispisujemo podatke sa servera za debugging
 
                 if (data.success) {
                     const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                     if (esimData) {
-                        // Prikazujemo sve podatke za debugging
-                        console.log("Podaci za karticu:", esimData);
-
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status; // Proveravamo tačan status kartice
+                        const status = (esimData.status === 'active' || esimData.status === 'in_use') ? 'Aktivna' : (esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana');
+                        const statusLabel = esimData.statuslabel ? esimData.statuslabel : ''; // Dodato za ispis statuslabela
                         const expiration = esimData.expirationTimestamp;
+                        const name = esimData.name || "Nepoznato";
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
                         const package = esimData.plan.package || "Nema paketa";
                         const packageExpiration = calculateDaysRemaining(expiration);
 
-                        // Prikazivanje podataka u HTML
                         document.getElementById('result').innerHTML = `
-                            <h3>Status Kartice: <span class="status-active">${status}</span></h3>
+                            <h3>Status Kartice: <span class="status-${status.toLowerCase()}">${status}</span></h3>
+                            <p><strong>Status Label:</strong> ${statusLabel}</p>
+                            <p><strong>Ime korisnika:</strong> ${name}</p>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
