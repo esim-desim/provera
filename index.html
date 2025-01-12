@@ -6,205 +6,154 @@
     <title>Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-
-        header {
-            background-color: #4CAF50;
-            color: white;
+        h1 {
             text-align: center;
-            padding: 15px 0;
+            color: #333;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .form-group input {
+        .form-container input[type="text"] {
             width: 100%;
             padding: 10px;
-            font-size: 16px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
-        .form-group button {
+        .form-container button {
+            width: 100%;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
-            font-size: 16px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
         }
-
-        .form-group button:hover {
+        .form-container button:hover {
             background-color: #45a049;
         }
-
         .result {
             margin-top: 20px;
-        }
-
-        .result-card {
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
-
-        .result-card h3 {
-            margin: 0 0 10px;
-            font-size: 20px;
+        .result h3 {
+            margin-bottom: 10px;
         }
-
-        .result-card p {
+        .result p {
             margin: 5px 0;
         }
-
         .progress-bar {
-            background: #e0e0e0;
+            width: 100%;
+            background-color: #e0e0e0;
             border-radius: 4px;
             overflow: hidden;
             margin: 10px 0;
         }
-
         .progress-bar-inner {
             height: 20px;
-            background: #4CAF50;
+            background-color: #4CAF50;
+            width: 0;
             transition: width 0.3s;
         }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            font-size: 12px;
-            color: white;
-            border-radius: 12px;
-            margin-left: 5px;
-        }
-
-        .badge.active { background: #4CAF50; }
-        .badge.inactive { background: #ff5722; }
-        .badge.not-installed { background: #ff9800; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Desim</h1>
-        <h1>Praćenje Potrošnje eSIM Kartice</h1>
-    </header>
+    <h1>Praćenje Potrošnje DeSIM Kartice</h1>
 
-    <div class="container">
-        <div class="form-group">
-            <label for="cardId">Unesite ID Kartice:</label>
-            <input type="text" id="cardId" placeholder="Unesite ID kartice">
-        </div>
-        <div class="form-group">
-            <button onclick="fetchData()">Prikaži Potrošnju</button>
-        </div>
+    <div class="form-container">
+        <label for="cardId">Unesite ID kartice:</label>
+        <input type="text" id="cardId" placeholder="Unesite ID kartice" />
+        <button onclick="fetchData()">Prikaži Potrošnju</button>
         <div id="result" class="result"></div>
     </div>
 
     <script>
-        // Mapa za pretvaranje država
+        // Mapa za pretvaranje skraćenica država u pune nazive
         const countryMap = {
             IT: "Italija",
             HR: "Hrvatska",
             DE: "Nemačka",
             FR: "Francuska",
-            US: "Sjedinjene Američke Države",
             NO: "Norveška",
             TR: "Turska",
-            RS: "Srbija",
-            BA: "Bosna i Hercegovina",
-            // Dodajte još država po potrebi
+            US: "Sjedinjene Američke Države",
+            // Dodajte više država po potrebi
         };
 
         async function fetchData() {
-            const cardId = document.getElementById('cardId').value;
-
+            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
                 alert('Molimo unesite ID kartice.');
                 return;
             }
 
-            const apiUrl = "https://your-project.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim";
-            const token = "Bearer vaš-token-ovde";
+            // Zamenjujemo CORS Anywhere URL sa vašim Vercel proxy-jem
+            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
+            const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
             try {
                 const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
                         'Authorization': token,
-                        'Accept': 'application/json',
-                    },
+                        'Accept': 'application/json'
+                    }
                 });
 
-                if (!response.ok) throw new Error('Greška pri učitavanju podataka.');
+                if (!response.ok) {
+                    throw new Error('Greška pri učitavanju podataka.');
+                }
 
                 const data = await response.json();
 
                 if (data.success) {
-                    const esimData = data.data.find(item => item.id == cardId);
+                    const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                     if (esimData) {
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status;
+                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
                         const expiration = esimData.expirationTimestamp;
-                        const countries = esimData.plan.countries.map(c => countryMap[c] || c).join(", ");
-                        const installed = esimData.installed ? "Da" : "Ne";
+                        const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
+                        const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
+                        const roaming = esimData.plan.isActive ? "Da" : "Ne";
 
                         document.getElementById('result').innerHTML = `
-                            <div class="result-card">
-                                <h3>Status Kartice: 
-                                    <span class="badge ${status === 'active' ? 'active' : status === 'not_installed' ? 'not-installed' : 'inactive'}">
-                                        ${status === 'active' ? 'Aktivna' : status === 'not_installed' ? 'Nije Instalirana' : 'Neaktivna'}
-                                    </span>
-                                </h3>
-                                <p><strong>Potrošeno:</strong> ${usedMB} MB od ${totalMB} MB (${percentageUsed}%)</p>
-                                <div class="progress-bar">
-                                    <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
-                                </div>
-                                <p><strong>Preostalo:</strong> ${remainingMB} MB</p>
-                                <p><strong>Ističe:</strong> ${expiration}</p>
-                                <p><strong>Države:</strong> ${countries}</p>
-                                <p><strong>Instalirana na Telefonu:</strong> ${installed}</p>
+                            <h3>Status Kartice: ${status}</h3>
+                            <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
+                            <div class="progress-bar">
+                                <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
+                            <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
+                            <p><strong>Ističe:</strong> ${expiration}</p>
+                            <p><strong>Države:</strong> ${countries}</p>
+                            <p><strong>Roming:</strong> ${roaming}</p>
+                            <p><strong>Hotspot:</strong> ${tethering}</p>
                         `;
                     } else {
-                        document.getElementById('result').innerHTML = '<div class="result-card">Kartica nije pronađena.</div>';
+                        document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
                     }
                 } else {
-                    document.getElementById('result').innerHTML = '<div class="result-card">Greška pri učitavanju podataka.</div>';
+                    document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
                 }
             } catch (error) {
-                document.getElementById('result').innerHTML = `<div class="result-card">${error.message}</div>`;
+                document.getElementById('result').innerHTML = error.message;
             }
         }
     </script>
