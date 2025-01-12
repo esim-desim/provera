@@ -22,7 +22,7 @@
         .logo {
             display: block;
             margin: 0 auto;
-            width: 120px;
+            width: 120px; /* Adjust the size of the logo */
             margin-top: 20px;
         }
 
@@ -193,16 +193,20 @@
                 }
 
                 const data = await response.json();
+                console.log("Podaci dobijeni sa servera:", data); // Ispisujemo podatke sa servera za debugging
 
                 if (data.success) {
                     const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                     if (esimData) {
+                        // Prikazujemo sve podatke za debugging
+                        console.log("Podaci za karticu:", esimData);
+
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : 'Nije instalirana';
+                        const status = esimData.status; // Proveravamo tačan status kartice
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
@@ -210,6 +214,7 @@
                         const package = esimData.plan.package || "Nema paketa";
                         const packageExpiration = calculateDaysRemaining(expiration);
 
+                        // Prikazivanje podataka u HTML
                         document.getElementById('result').innerHTML = `
                             <h3>Status Kartice: <span class="status-active">${status}</span></h3>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
