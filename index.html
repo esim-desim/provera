@@ -193,7 +193,7 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna (Isključena)' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
+                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Aktivna - iskljucena');
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
@@ -207,7 +207,7 @@
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe:</strong> ${expiration}</p>
-                            <p><strong>Države:</strong> ${countries}</p>
+                            <p><strong>Region:</strong> ${countries}</p>
                             <p><strong>Roming:</strong> ${roaming}</p>
                             <p><strong>Hotspot:</strong> ${tethering}</p>
                         `;
