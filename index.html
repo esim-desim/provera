@@ -203,7 +203,7 @@
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
                         const status = (esimData.status === 'active' || esimData.status === 'in_use') ? 'Aktivna' : (esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana');
-                        const statusLabel = esimData.statuslabel || "Nema status labela"; // Koristi "Nema status labela" ako ne postoji
+                        const statusLabel = esimData.statuslabel === "eSIM in use" ? "eSIM u upotrebi" : (esimData.statuslabel || "Nema status labela");
                         const expiration = esimData.expirationTimestamp;
                         const name = esimData.name || "Nepoznato";
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
@@ -211,8 +211,10 @@
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
                         const package = esimData.plan.name || "Nema paketa"; // Prikazivanje paketa sa plan.name
                         const packageExpiration = calculateDaysRemaining(expiration);
+                        const planStatus = esimData.plan.isActive ? "Aktivan" : "Neaktivan";
 
                         document.getElementById('result').innerHTML = `
+                            <h3>Plan: ${planStatus}</h3>
                             <h3>Status Kartice: <span class="status-${status.toLowerCase()}">${status}</span></h3>
                             <p><strong>Status Label:</strong> ${statusLabel}</p>
                             <p><strong>Ime korisnika:</strong> ${name}</p>
@@ -221,24 +223,4 @@
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
-                            <p><strong>Ističe:</strong> ${expiration}</p>
-                            <p><strong>Preostalo dana do isteka paketa:</strong> ${packageExpiration} dana</p>
-                            <p><strong>Region:</strong> ${countries}</p>
-                            <p><strong>Roming:</strong> ${roaming}</p>
-                            <p><strong>Hotspot:</strong> ${tethering}</p>
-                            <p><strong>Paket:</strong> ${package}</p>
-                        `;
-                    } else {
-                        document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
-                    }
-                } else {
-                    document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
-                }
-            } catch (error) {
-                document.getElementById('result').innerHTML = error.message;
-            }
-        }
-    </script>
-
-</body>
-</html>
+                            <p><strong>Ističe
