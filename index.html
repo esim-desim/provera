@@ -141,7 +141,7 @@
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
                         const status = esimData.status === 'active' ? 'Aktivna' : 'Isključena';
-                        const userName = esimData.user ? esimData.user : "Nepoznat korisnik";
+                        const userName = esimData.name ? esimData.user : "Nepoznat korisnik";
                         const planName = esimData.plan?.name || "Nema paketa";
                         const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
                         const hotspotAllowed = esimData.hotspotAllowed ? "Dozvoljen" : "Nije dozvoljen";
