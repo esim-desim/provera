@@ -3,116 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praćenje Potrošnje eSIM Kartice</title>
+    <title>Desim - Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f7f7f7;
+            padding: 0;
+            background-color: #f3f4f6;
         }
 
         h1 {
             text-align: center;
             color: #333;
             font-size: 2.5em;
-            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto;
+            width: 120px; /* Adjust the size of the logo */
+            margin-top: 20px;
         }
 
         .form-container {
-            max-width: 500px;
+            max-width: 480px;
             margin: 0 auto;
             background-color: #fff;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
         }
 
         .form-container input[type="text"] {
             width: 100%;
-            padding: 15px;
-            margin: 15px 0;
-            border: 2px solid #ccc;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
             border-radius: 8px;
+            font-size: 1.1em;
             box-sizing: border-box;
-            font-size: 1.2em;
+            background-color: #fafafa;
         }
 
         .form-container button {
             width: 100%;
-            padding: 15px;
-            background-color: #4CAF50;
+            padding: 14px;
+            background-color: #3a86ff;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
         .form-container button:hover {
-            background-color: #45a049;
+            background-color: #2f6fdb;
         }
 
         .result {
             margin-top: 30px;
-            padding: 20px;
+            padding: 25px;
             background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
         .status-active {
-            color: #4CAF50;
-            font-weight: bold;
+            color: #2ecc71;
+            font-weight: 700;
         }
 
         .status-inactive {
-            color: #aaa;
-            font-weight: bold;
+            color: #bdc3c7;
+            font-weight: 700;
         }
 
-        .status-not-installed {
-            color: #FF8C00;
-            font-weight: bold;
+        .status-disabled {
+            color: #e67e22;
+            font-weight: 700;
         }
 
         .progress-bar {
             width: 100%;
-            height: 12px;
+            height: 14px;
             background-color: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 15px 0;
+            border-radius: 8px;
+            margin: 20px 0;
         }
 
         .progress-bar-inner {
             height: 100%;
-            background-color: #4CAF50;
+            background-color: #3a86ff;
             width: 0;
-            transition: width 0.4s ease;
-            border-radius: 6px;
+            transition: width 0.4s;
+            border-radius: 8px;
         }
 
         .info-section {
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
-            margin-top: 25px;
+            flex-wrap: wrap;
         }
 
         .info-card {
             width: 48%;
             background-color: #f9f9f9;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 18px;
             border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
 
         .info-card p {
             font-size: 1.1em;
             margin: 8px 0;
+            color: #555;
         }
 
         .info-card strong {
@@ -121,14 +129,16 @@
 
         .icon {
             font-size: 1.4em;
-            vertical-align: middle;
             margin-right: 10px;
+            color: #3a86ff;
         }
     </style>
 </head>
 <body>
 
-    <h1>Praćenje Potrošnje eSIM Kartice</h1>
+    <img src="your-logo.png" alt="Desim Logo" class="logo"> <!-- Replace with your logo file -->
+
+    <h1>Desim - Praćenje Potrošnje eSIM Kartice</h1>
 
     <div class="form-container">
         <label for="cardId">Unesite ID kartice:</label>
@@ -138,6 +148,7 @@
     </div>
 
     <script>
+        // Mapa za pretvaranje skraćenica država u pune nazive
         const countryMap = {
             IT: "Italija",
             HR: "Hrvatska",
@@ -150,7 +161,7 @@
         };
 
         async function fetchData() {
-            const cardId = document.getElementById('cardId').value; 
+            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
                 alert('Molimo unesite ID kartice.');
                 return;
@@ -175,38 +186,30 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    const esimData = data.data.find(item => item.id == cardId); 
+                    const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                     if (esimData) {
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Isključena');
+                        const status = esimData.status === 'active' ? 'Aktivna (Isključena)' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
 
-                        let statusClass = "status-inactive";
-                        if (status === 'Aktivna') statusClass = "status-active";
-                        else if (status === 'Nije instalirana') statusClass = "status-not-installed";
-
                         document.getElementById('result').innerHTML = `
-                            <h3 class="${statusClass}">Status Kartice: ${status}</h3>
+                            <h3>Status Kartice: <span class="status-active">${status}</span></h3>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe:</strong> ${expiration}</p>
-                            <div class="info-section">
-                                <div class="info-card">
-                                    <p><strong>Države:</strong> ${countries}</p>
-                                    <p><strong>Roming:</strong> ${roaming}</p>
-                                    <p><strong>Hotspot:</strong> ${tethering}</p>
-                                </div>
-                            </div>
+                            <p><strong>Države:</strong> ${countries}</p>
+                            <p><strong>Roming:</strong> ${roaming}</p>
+                            <p><strong>Hotspot:</strong> ${tethering}</p>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
