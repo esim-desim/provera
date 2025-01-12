@@ -101,7 +101,8 @@
                 return;
             }
 
-            const apiUrl = "https://cors-anywhere.herokuapp.com/https://esim.sm/api/reseller/v1/esim"; // Privremeni CORS proxy
+            // Zamenjujemo CORS Anywhere URL sa vašim Vercel proxy-jem
+            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
             const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
             try {
