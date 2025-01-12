@@ -22,7 +22,7 @@
         .logo {
             display: block;
             margin: 0 auto;
-            width: 120px; /* Adjust the size of the logo */
+            width: 120px;
             margin-top: 20px;
         }
 
@@ -160,6 +160,15 @@
             // Dodajte više država po potrebi
         };
 
+        // Funkcija za izračunavanje preostalog broja dana do isteka paketa
+        function calculateDaysRemaining(expirationDate) {
+            const currentDate = new Date();
+            const expiration = new Date(expirationDate);
+            const timeDiff = expiration - currentDate;
+            const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            return daysRemaining > 0 ? daysRemaining : 0;
+        }
+
         async function fetchData() {
             const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
@@ -193,13 +202,13 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Aktivna - isključena');
+                        const status = esimData.status === 'active' ? 'Aktivna' : 'Nije instalirana';
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
                         const package = esimData.plan.package || "Nema paketa";
-                        const packageExpiration = esimData.plan.expiration || "Nepoznato";
+                        const packageExpiration = calculateDaysRemaining(expiration);
 
                         document.getElementById('result').innerHTML = `
                             <h3>Status Kartice: <span class="status-active">${status}</span></h3>
@@ -209,11 +218,11 @@
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe:</strong> ${expiration}</p>
+                            <p><strong>Preostalo dana do isteka paketa:</strong> ${packageExpiration} dana</p>
                             <p><strong>Region:</strong> ${countries}</p>
                             <p><strong>Roming:</strong> ${roaming}</p>
                             <p><strong>Hotspot:</strong> ${tethering}</p>
                             <p><strong>Paket:</strong> ${package}</p>
-                            <p><strong>Trajanje paketa:</strong> ${packageExpiration}</p>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
