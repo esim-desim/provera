@@ -3,102 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praćenje Potrošnje eSIM Kartice - DeSIM</title>
+    <title>Desim - Praćenje Potrošnje eSIM Kartice</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f6f9;
-            color: #333;
+            padding: 0;
+            background-color: #f3f4f6;
         }
+
         h1 {
             text-align: center;
-            color: #2b3e50;
+            color: #333;
+            font-size: 2.5em;
+            margin-top: 40px;
         }
-        .form-container {
-            max-width: 500px;
+
+        .logo {
+            display: block;
             margin: 0 auto;
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 120px; /* Adjust the size of the logo */
+            margin-top: 20px;
         }
+
+        .form-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
         .form-container input[type="text"] {
             width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 1px solid #d1d1d1;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 1.1em;
+            box-sizing: border-box;
             background-color: #fafafa;
         }
+
         .form-container button {
             width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
+            padding: 14px;
+            background-color: #3a86ff;
             color: white;
             border: none;
             border-radius: 8px;
+            font-size: 1.2em;
             cursor: pointer;
-            font-size: 16px;
+            transition: background-color 0.3s;
         }
+
         .form-container button:hover {
-            background-color: #45a049;
+            background-color: #2f6fdb;
         }
+
         .result {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        .result h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .result p {
-            margin: 8px 0;
-            font-size: 16px;
-        }
-        .result .status {
-            font-size: 16px;
-            padding: 5px 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-        }
+
         .status-active {
-            background-color: #4CAF50;
-            color: white;
+            color: #2ecc71;
+            font-weight: 700;
         }
-        .status-disabled {
-            background-color: #f44336;
-            color: white;
-        }
+
         .status-inactive {
-            background-color: #f1c40f;
-            color: black;
+            color: #bdc3c7;
+            font-weight: 700;
         }
+
+        .status-disabled {
+            color: #e67e22;
+            font-weight: 700;
+        }
+
         .progress-bar {
             width: 100%;
+            height: 14px;
             background-color: #e0e0e0;
             border-radius: 8px;
-            margin-top: 15px;
-            height: 18px;
+            margin: 20px 0;
         }
+
         .progress-bar-inner {
             height: 100%;
-            background-color: #4CAF50;
-            transition: width 0.3s;
+            background-color: #3a86ff;
+            width: 0;
+            transition: width 0.4s;
             border-radius: 8px;
+        }
+
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            width: 48%;
+            background-color: #f9f9f9;
+            padding: 18px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card p {
+            font-size: 1.1em;
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .info-card strong {
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 1.4em;
+            margin-right: 10px;
+            color: #3a86ff;
         }
     </style>
 </head>
 <body>
 
-    <h1>Praćenje Potrošnje eSIM Kartice - DeSIM</h1>
+    <img src="your-logo.png" alt="Desim Logo" class="logo"> <!-- Replace with your logo file -->
+
+    <h1>Desim - Praćenje Potrošnje eSIM Kartice</h1>
 
     <div class="form-container">
         <label for="cardId">Unesite ID kartice:</label>
@@ -127,7 +167,6 @@
                 return;
             }
 
-            // Zamenjujemo CORS Anywhere URL sa vašim Vercel proxy-jem
             const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
             const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
@@ -154,16 +193,14 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
+                        const status = esimData.status === 'active' ? 'Aktivna (Isključena)' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Neaktivna');
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
 
-                        const cardStatus = esimData.status === 'active' && esimData.isActive ? "Aktivna" : (esimData.isActive ? "Aktivna, ali isključena" : "Neaktivna");
-
                         document.getElementById('result').innerHTML = `
-                            <h3>Status Kartice: <span class="status ${cardStatus === 'Aktivna' ? 'status-active' : (cardStatus === 'Aktivna, ali isključena' ? 'status-disabled' : 'status-inactive')}">${cardStatus}</span></h3>
+                            <h3>Status Kartice: <span class="status-active">${status}</span></h3>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
