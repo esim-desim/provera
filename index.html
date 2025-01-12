@@ -136,8 +136,7 @@
 </head>
 <body>
 
-    <!-- Logo -->
-    <img src="https://raw.githubusercontent.com/esim-desim/provera/refs/heads/main/IMG_2714.jpeg" alt="Desim Logo" class="logo"> <!-- Your logo URL -->
+    <img src="your-logo.png" alt="Desim Logo" class="logo"> <!-- Replace with your logo file -->
 
     <h1>Desim - Praćenje Potrošnje eSIM Kartice</h1>
 
@@ -149,6 +148,7 @@
     </div>
 
     <script>
+        // Mapa za pretvaranje skraćenica država u pune nazive
         const countryMap = {
             IT: "Italija",
             HR: "Hrvatska",
@@ -157,8 +157,10 @@
             NO: "Norveška",
             TR: "Turska",
             US: "Sjedinjene Američke Države",
+            // Dodajte više država po potrebi
         };
 
+        // Funkcija za izračunavanje preostalog broja dana do isteka paketa
         function calculateDaysRemaining(expirationDate) {
             const currentDate = new Date();
             const expiration = new Date(expirationDate);
@@ -168,13 +170,13 @@
         }
 
         async function fetchData() {
-            const cardId = document.getElementById('cardId').value;
+            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
             if (!cardId) {
                 alert('Molimo unesite ID kartice.');
                 return;
             }
 
-            const apiUrl = `https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim`;
+            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
             const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
 
             try {
@@ -193,14 +195,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    const esimData = data.data.find(item => item.id == cardId);
+                    const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
 
                     if (esimData) {
                         const usedMB = esimData.mbUsed;
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : 'Nije instalirana';
+                        const status = (esimData.status === 'active' || esimData.status === 'in_use') ? 'Aktivna' : 'Nije instalirana';
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
