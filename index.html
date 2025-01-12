@@ -193,11 +193,13 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Aktivna - iskljucena');
+                        const status = esimData.status === 'active' ? 'Aktivna' : (esimData.status === 'not_installed' ? 'Nije instalirana' : 'Aktivna - isključena');
                         const expiration = esimData.expirationTimestamp;
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
+                        const package = esimData.plan.package || "Nema paketa";
+                        const packageExpiration = esimData.plan.expiration || "Nepoznato";
 
                         document.getElementById('result').innerHTML = `
                             <h3>Status Kartice: <span class="status-active">${status}</span></h3>
@@ -210,6 +212,8 @@
                             <p><strong>Region:</strong> ${countries}</p>
                             <p><strong>Roming:</strong> ${roaming}</p>
                             <p><strong>Hotspot:</strong> ${tethering}</p>
+                            <p><strong>Paket:</strong> ${package}</p>
+                            <p><strong>Trajanje paketa:</strong> ${packageExpiration}</p>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
