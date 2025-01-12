@@ -222,5 +222,30 @@
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
-                            <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
-                            <p><strong>Ističe
+                            <p><strong>Preostalo:</strong> ${remainingMB}MB</
+                                                        <p><strong>Ističe za:</strong> ${packageExpiration} dana</p>
+                            <div class="info-section">
+                                <div class="info-card">
+                                    <p><strong>Država:</strong> ${countries}</p>
+                                    <p><strong>Roaming:</strong> ${roaming}</p>
+                                </div>
+                                <div class="info-card">
+                                    <p><strong>Plan:</strong> ${package}</p>
+                                    <p><strong>Tethering:</strong> ${tethering}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('result').innerHTML = `<p>eSIM kartica sa ID-om ${cardId} nije pronađena.</p>`;
+                    }
+                } else {
+                    throw new Error('Podaci nisu uspešno preuzeti.');
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Greška: ${error.message}</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
