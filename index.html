@@ -157,7 +157,6 @@
             NO: "Norveška",
             TR: "Turska",
             US: "Sjedinjene Američke Države",
-            // Dodajte više država po potrebi
         };
 
         // Funkcija za izračunavanje preostalog broja dana do isteka paketa
@@ -202,35 +201,33 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = (esimData.status === 'active' || esimData.status === 'in_use') ? 'Aktivna' : (esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana');
-                        const statusLabel = esimData.statuslabel === "eSIM in use" ? "eSIM u upotrebi" : (esimData.statuslabel || "Nema status labela");
+                        const status = esimData.status === 'active' ? 'Aktivna' : esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana';
                         const expiration = esimData.expirationTimestamp;
-                        const name = esimData.name || "Nepoznato";
                         const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
                         const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const roaming = esimData.plan.isActive ? "Da" : "Ne";
-                        const package = esimData.plan.name || "Nema paketa"; // Prikazivanje paketa sa plan.name
+                        const package = esimData.plan.name || "Nema paketa";
                         const packageExpiration = calculateDaysRemaining(expiration);
                         const planStatus = esimData.plan.isActive ? "Aktivan" : "Neaktivan";
+                        const userName = esimData.userName || "Nepoznat korisnik";
 
                         document.getElementById('result').innerHTML = `
-                            <h3>Plan: ${planStatus}</h3>
-                            <h3>Status Kartice: <span class="status-${status.toLowerCase()}">${status}</span></h3>
-                            <p><strong>Status Label:</strong> ${statusLabel}</p>
-                            <p><strong>Ime korisnika:</strong> ${name}</p>
+                            <h3>Plan: ${package}</h3>
+                            <p><strong>Status plana:</strong> ${planStatus}</p>
+                            <p><strong>Korisnik:</strong> ${userName}</p>
+                            <h3>Status kartice: <span class="status-${status.toLowerCase()}">${status}</span></h3>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
-                            <p><strong>Preostalo:</strong> ${remainingMB}MB</
-                                                        <p><strong>Ističe za:</strong> ${packageExpiration} dana</p>
+                            <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
+                            <p><strong>Ističe za:</strong> ${packageExpiration} dana</p>
                             <div class="info-section">
                                 <div class="info-card">
                                     <p><strong>Država:</strong> ${countries}</p>
                                     <p><strong>Roaming:</strong> ${roaming}</p>
                                 </div>
                                 <div class="info-card">
-                                    <p><strong>Plan:</strong> ${package}</p>
                                     <p><strong>Tethering:</strong> ${tethering}</p>
                                 </div>
                             </div>
