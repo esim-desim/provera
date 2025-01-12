@@ -102,35 +102,9 @@
             border-radius: 8px;
         }
 
-        .info-section {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .info-card {
-            width: 48%;
-            background-color: #f9f9f9;
-            padding: 18px;
-            margin-bottom: 18px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .info-card p {
+        p {
             font-size: 1.1em;
-            margin: 8px 0;
             color: #555;
-        }
-
-        .info-card strong {
-            font-weight: 600;
-        }
-
-        .icon {
-            font-size: 1.4em;
-            margin-right: 10px;
-            color: #3a86ff;
         }
     </style>
 </head>
@@ -157,6 +131,7 @@
             NO: "Norveška",
             TR: "Turska",
             US: "Sjedinjene Američke Države",
+            // Dodajte više država po potrebi
         };
 
         // Funkcija za izračunavanje preostalog broja dana do isteka paketa
@@ -201,45 +176,33 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : esimData.status === 'disabled' ? 'Isključena' : 'Nije instalirana';
+                        const status = esimData.status === 'active' ? 'Aktivna' : 'Isključena';
+                        const userName = esimData.user ? esimData.user : "Nepoznat korisnik";
+                        const planName = esimData.plan?.name || "Nema paketa";
+                        const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
                         const expiration = esimData.expirationTimestamp;
-                        const countries = esimData.plan.countries.map(country => countryMap[country] || country).join(", ");
-                        const tethering = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
-                        const roaming = esimData.plan.isActive ? "Da" : "Ne";
-                        const package = esimData.plan.name || "Nema paketa";
-                        const packageExpiration = calculateDaysRemaining(expiration);
-                        const planStatus = esimData.plan.isActive ? "Aktivan" : "Neaktivan";
-                        const userName = esimData.userName || "Nepoznat korisnik";
+                        const daysRemaining = calculateDaysRemaining(expiration);
 
                         document.getElementById('result').innerHTML = `
-                            <h3>Plan: ${package}</h3>
-                            <p><strong>Status plana:</strong> ${planStatus}</p>
+                            <p><strong>Plan:</strong> ${planName}</p>
+                            <p><strong>Status plana:</strong> ${isActive}</p>
                             <p><strong>Korisnik:</strong> ${userName}</p>
-                            <h3>Status kartice: <span class="status-${status.toLowerCase()}">${status}</span></h3>
+                            <p><strong>Status kartice:</strong> ${status}</p>
                             <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
                             <div class="progress-bar">
                                 <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
-                            <p><strong>Ističe za:</strong> ${packageExpiration} dana</p>
-                            <div class="info-section">
-                                <div class="info-card">
-                                    <p><strong>Država:</strong> ${countries}</p>
-                                    <p><strong>Roaming:</strong> ${roaming}</p>
-                                </div>
-                                <div class="info-card">
-                                    <p><strong>Tethering:</strong> ${tethering}</p>
-                                </div>
-                            </div>
+                            <p><strong>Ističe za:</strong> ${daysRemaining} dana</p>
                         `;
                     } else {
-                        document.getElementById('result').innerHTML = `<p>eSIM kartica sa ID-om ${cardId} nije pronađena.</p>`;
+                        document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
                     }
                 } else {
-                    throw new Error('Podaci nisu uspešno preuzeti.');
+                    document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
                 }
             } catch (error) {
-                document.getElementById('result').innerHTML = `<p>Greška: ${error.message}</p>`;
+                document.getElementById('result').innerHTML = error.message;
             }
         }
     </script>
