@@ -153,6 +153,7 @@
                         const planName = esimData.plan?.name || "Nema paketa";
                         const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
                         const hotspotAllowed = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
+                        const packageExpiration = calculateDaysRemaining(expiration);
                     
 
                         document.getElementById('result').innerHTML = `
