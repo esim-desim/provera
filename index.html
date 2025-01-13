@@ -12,8 +12,9 @@
             background-color: #f3f4f6;
         }
         #logo {
-            width: 150px
-                margin-bottom: 20px}
+            width: 150px;
+            margin-bottom: 20px;
+        }
 
         h1 {
             text-align: center;
@@ -98,7 +99,7 @@
 </head>
 <body>
 
-    <img src="https://raw.githubusercontent.com/esim-desim/provera/refs/heads/main/IMG_2714.jpeg" alt="Desim Logo" class="logo"> <!-- Replace with your logo file -->
+    <img src="https://raw.githubusercontent.com/esim-desim/provera/refs/heads/main/IMG_2714.jpeg" alt="Desim Logo" class="logo">
 
     <h1>Desim - Praćenje Potrošnje eSIM Kartice</h1>
 
@@ -110,16 +111,27 @@
     </div>
 
     <script>
-  // Funkcija za izračunavanje preostalog broja dana do isteka paketa
+        // Funkcija za izračunavanje preostalog broja dana do isteka paketa
         function calculateDaysRemaining(expirationDate) {
             const currentDate = new Date();
             const expiration = new Date(expirationDate);
             const timeDiff = expiration - currentDate;
             const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            return daysRemaining > 0 ? daysRemaining : 0;}
-    
-        async function fetchData() {
-            const cardId = document.getElementById('cardId').value; // Uneti ID kartice
+            return daysRemaining > 0 ? daysRemaining : 0;
+        }
+
+        // Provera URL-a za card_id i automatski poziv podataka
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardId = urlParams.get('card_id'); // Preuzimanje card_id iz URL-a
+
+            if (cardId) {
+                document.getElementById('cardId').value = cardId; // Unesi ID kartice u polje
+                fetchData(cardId); // Pozovi funkciju za prikaz podataka
+            }
+        };
+
+        async function fetchData(cardId) {
             if (!cardId) {
                 alert('Molimo unesite ID kartice.');
                 return;
@@ -152,12 +164,12 @@
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
                         const statusMapping = {
-                           in_use: 'Aktivna',         // eSIM je trenutno aktivna
-                           not_installed: 'Nije instalirana', // eSIM nije instalirana na uređaju
-                           disabled: 'Aktivna ali isključena na telefonu',  // eSIM je isključena
-};
+                            in_use: 'Aktivna', 
+                            not_installed: 'Nije instalirana', 
+                            disabled: 'Aktivna ali isključena na telefonu', 
+                        };
 
-const status = statusMapping[esimData.status] || 'Nepoznato stanje';
+                        const status = statusMapping[esimData.status] || 'Nepoznato stanje';
                         
                         const name = esimData.name ||  "Nepoznat korisnik";
                         const planName = esimData.plan?.name || "Nema paketa";
@@ -165,7 +177,6 @@ const status = statusMapping[esimData.status] || 'Nepoznato stanje';
                         const hotspotAllowed = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
                         const expiration = esimData.expirationTimestamp;
                         const packageExpiration = calculateDaysRemaining(expiration);
-                    
 
                         document.getElementById('result').innerHTML = `
                             <p><strong>Plan:</strong> ${planName}</p>
@@ -179,7 +190,7 @@ const status = statusMapping[esimData.status] || 'Nepoznato stanje';
                             </div>
                             <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
                             <p><strong>Ističe: </strong> ${expiration} </p>
-                            <p><strong>Ističe za: </strong>${packageExpiration} dana  </p>
+                            <p><strong>Ističe za: </strong>${packageExpiration} dana</p>
                         `;
                     } else {
                         document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
