@@ -151,7 +151,14 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'in_use' ? 'Aktivna' : 'Isključena';
+                        const statusMapping = {
+  in_use: 'Aktivna',         // eSIM je trenutno aktivna
+  not_installed: 'Nije instalirana', // eSIM nije instalirana na uređaju
+  turned_off: 'Isključena',  // eSIM je isključena
+};
+
+const status = statusMapping[esimData.status] || 'Nepoznato stanje';
+                        
                         const name = esimData.name ||  "Nepoznat korisnik";
                         const planName = esimData.plan?.name || "Nema paketa";
                         const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
