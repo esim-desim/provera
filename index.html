@@ -128,4 +128,83 @@
             if (cardId) {
                 document.getElementById('cardId').value = cardId; // Unesi ID kartice u polje
                 fetchData(cardId); // Pozovi funkciju za prikaz podataka automatski
-                document.querySelector("button").style.display = "none
+                document.querySelector("button").style.display = "none"; // Sakrij dugme ako je ID kartice u URL-u
+            }
+        };
+
+        async function fetchData() {
+            let cardId = document.getElementById('cardId').value; // Preuzmi unos sa inputa
+            if (!cardId) {
+                alert('Molimo unesite ID kartice.');
+                return;
+            }
+
+            const apiUrl = "https://provera.vercel.app/api/proxy?url=https://esim.sm/api/reseller/v1/esim"; 
+            const token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTk1MDc2fQ.eyJzdWIiOjE5NTA3NiwiaXNzIjoiIiwiYXVkIjoiIiwiaWF0IjoxNzM2NTU5ODI3LCJleHAiOjE3NjgwOTU4MjcsImp0aSI6IjIzNTlmY2VkMWE0NjViZCIsImlkIjoxOTUwNzZ9.w4gJxi2AHlx-3r-Hu3w-Wvd8XIIOyVFnto_hnGQXAvI";
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': token,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Greška pri učitavanju podataka.');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const esimData = data.data.find(item => item.id == cardId); // Pretraživanje na osnovu ID kartice
+
+                    if (esimData) {
+                        const usedMB = esimData.mbUsed;
+                        const totalMB = esimData.mbTotal;
+                        const remainingMB = totalMB - usedMB;
+                        const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
+                        const statusMapping = {
+                            in_use: 'Aktivna', 
+                            not_installed: 'Nije instalirana', 
+                            disabled: 'Aktivna ali isključena na telefonu', 
+                        };
+
+                        const status = statusMapping[esimData.status] || 'Nepoznato stanje';
+                        
+                        const name = esimData.name ||  "Nepoznat korisnik";
+                        const planName = esimData.plan?.name || "Nema paketa";
+                        const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
+                        const hotspotAllowed = esimData.plan.isTetheringAllowed ? "Dozvoljen" : "Nije dozvoljen";
+                        const expiration = esimData.expirationTimestamp;
+                        const packageExpiration = calculateDaysRemaining(expiration);
+
+                        document.getElementById('result').innerHTML = `
+                            <p><strong>Plan:</strong> ${planName}</p>
+                            <p><strong>Status plana:</strong> ${isActive}</p>
+                            <p><strong>Korisnik:</strong> ${name}</p>
+                            <p><strong>Status kartice:</strong> ${status}</p>
+                            <p><strong>Hotspot:</strong> ${hotspotAllowed}</p>
+                            <p><strong>Potrošeno:</strong> ${usedMB}MB od ${totalMB}MB (${percentageUsed}%)</p>
+                            <div class="progress-bar">
+                                <div class="progress-bar-inner" style="width: ${percentageUsed}%;"></div>
+                            </div>
+                            <p><strong>Preostalo:</strong> ${remainingMB}MB</p>
+                            <p><strong>Ističe: </strong> ${expiration} </p>
+                            <p><strong>Ističe za: </strong>${packageExpiration} dana</p>
+                        `;
+                    } else {
+                        document.getElementById('result').innerHTML = 'Kartica nije pronađena.';
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = 'Greška pri učitavanju podataka.';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = error.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
