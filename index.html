@@ -151,7 +151,7 @@
                         const totalMB = esimData.mbTotal;
                         const remainingMB = totalMB - usedMB;
                         const percentageUsed = ((usedMB / totalMB) * 100).toFixed(2);
-                        const status = esimData.status === 'active' ? 'Aktivna' : 'Isključena';
+                        const status = esimData.status === 'in_use' ? 'Aktivna' : 'Isključena';
                         const name = esimData.name ||  "Nepoznat korisnik";
                         const planName = esimData.plan?.name || "Nema paketa";
                         const isActive = esimData.plan?.isActive ? "Aktivan" : "Nije aktivan";
