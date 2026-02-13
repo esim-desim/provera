@@ -5,7 +5,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "URL parameter is required" });
     }
 
-    // Postavljanje CORS zaglavlja
+    // Dozvola za CORS
     res.setHeader('Access-Control-Allow-Origin', '*'); // Dozvoljava sve domene
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
@@ -16,10 +16,11 @@ export default async function handler(req, res) {
     }
 
     try {
+        // Slanje GET zahteva ka API-ju
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer ${process.env.ESIM_TOKEN}',
+                'Authorization': `Bearer ${process.env.ESIM_TOKEN}`, // ispravno
                 'Accept': 'application/json',
             }
         });
